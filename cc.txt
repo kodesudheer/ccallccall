@@ -1,0 +1,71 @@
+<html ng-app="myapp">
+<head>
+<title>This is controller communication Exaaaaample </title>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js">
+</script>
+</head>
+<body>
+<div ng-app="myapp" ng-controller="controlerone">
+This is in First Controller: <input type="text" ng-model="message">
+ <button ng-click="handleclick(message)">Broadcasttosecondcontroller</button>
+</div>
+
+<div ng-app="myapp" ng-controller="controlertwo">
+
+This is in second controller: <input type="text" ng-model="message">
+
+</div>
+
+<script>
+
+var mymodule = angular.module("myapp",[]);
+
+mymodule.factory("mysharedservices", function($rootScope){
+
+var sharedservices = {};
+
+sharedservices.message="";
+sharedservices.prepareforbc =function(msg){
+ this.message= msg;
+ this.broadcastitem();
+
+};
+
+sharedservices.broadcastitem = function() 
+
+{
+  $rootScope.$broadcast('handlebroadcast');
+};
+
+return sharedservices;
+});
+
+
+
+mymodule.controller('controlerone',function($scope,mysharedservices){
+
+ $scope.handleclick=function(msg){
+ mysharedservices.prepareforbc(msg);
+};
+  $scope.$on('handlebroadcast',function(){
+  $scope.message = mysharedservices.message;
+  });
+});
+
+
+mymodule.controller('controlertwo',function($scope,mysharedservices){
+
+$scope.$on('handlebroadcast',function(){
+  $scope.message = mysharedservices.message;
+ });
+
+});
+
+
+
+</script>
+
+</body>
+
+
+</html>
